@@ -1,7 +1,7 @@
 {
   "name": "xtuff",
   "version": "1.0.0",
-  "description": "",
+  "description": "A dev command to create stuffs easy! (components, services, etc...)",
   "main": "index.js",
   "bin": {
     "xtuff": "./index.js"

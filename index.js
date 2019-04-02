@@ -21,7 +21,7 @@ cmd.on('*', opt => {
 
 cmd.parse(process.argv);
 
-// Handle case where no command is passed (`$ react`)
+// Handle case where no command is passed (`$ xtuff`)
 if (!process.argv.slice(2).length) {
     cmd.help();
 }
