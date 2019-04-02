@@ -5,7 +5,7 @@ With xtuff you can create new custom components, services, etc .. for your appli
 
 Just create its templates on xtuff's templates folder of your package, and run the command after that.
 
-**EASY!**
+EASY! :sunglasses:
 
 ## Installation
 ```
