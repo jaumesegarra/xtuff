@@ -1,5 +1,5 @@
 # xtuff
-A dev command to create your custom stuff easily! (components, services, etc...)
+> A dev command to create your custom stuff easily! (components, services, etc...)
 
 ## Installation
 ```
@@ -15,3 +15,7 @@ Steps:
 - Run (for example) `npm run g component helloComponent`
 	- "component": It's the name of the folder inside `_templates_`.
 	- "helloComponent": Path where the new thing will generated and also: the name of thing.
+
+## License
+
+[MIT](https://github.com/jaumesegarra/xtuff/blob/master/LICENSE)
