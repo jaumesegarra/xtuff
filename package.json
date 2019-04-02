@@ -1,0 +1,22 @@
+{
+  "name": "xtuff",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "xtuff": "./index.js"
+  },
+  "scripts": {
+    "postinstall": "node ./postinstall.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jaume Segarra",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "ejs": "^2.6.1",
+    "fs-extra": "^7.0.1",
+    "path": "^0.12.7",
+    "tmp": "^0.1.0"
+  }
+}
