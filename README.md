@@ -1,6 +1,12 @@
 # xtuff
 > A dev command to create your custom stuff easily! (components, services, etc...)
 
+With xtuff you can create new custom components, services, etc .. for your application dynamically.
+
+Just create its templates on xtuff's templates folder (`_templates_`) of your package, and run the command after that.
+
+EASY!
+
 ## Installation
 ```
 npm install xtuff --save-dev
