@@ -12,6 +12,10 @@ const getStuffName = (currentPath) => {
     return splits[splits.length - 1];
 };
 
+String.prototype.toCapitalize = function() {
+    return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+};
+
 const copyFolderResources = (name, pathname, folder, cacheFolderPath) => new Promise(function(resolve, reject) {
     fs.readdir(folder, function (err, files) {
         if (err) {
@@ -34,7 +38,8 @@ const copyFolderResources = (name, pathname, folder, cacheFolderPath) => new Pro
                 if(extension === EJS_EXTENSION){
                     fs.readFile(resourcePath, 'utf8', function (err, data) {
                         const component = ejs.render(data, {
-                            name: getStuffName(pathname)
+                            name: getStuffName(pathname),
+                            Name: getStuffName(pathname).toCapitalize()
                         });
 
                         const filename = path.basename(resourcePath).toLowerCase().replace('%name%', getStuffName(pathname)).replace(EJS_EXTENSION, '');
