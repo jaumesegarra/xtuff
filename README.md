@@ -3,9 +3,9 @@
 
 With xtuff you can create new custom components, services, etc .. for your application dynamically.
 
-Just create its templates on xtuff's templates folder (`_templates_`) of your package, and run the command after that.
+Just create its templates on xtuff's templates folder of your package, and run the command after that.
 
-EASY!
+**EASY!**
 
 ## Installation
 ```
