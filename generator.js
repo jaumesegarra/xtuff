@@ -11,9 +11,7 @@ String.prototype.toCapitalize = function() {
 };
 
 const getStuffName = (currentPath) => {
-    const splits = currentPath.split('/');
-
-    return splits[splits.length - 1];
+    return path.basename(currentPath);
 };
 
 const onError = (message, err, reject) => {
@@ -102,7 +100,8 @@ module.exports = (generatorName, stuffPath) => {
     if (fs.existsSync(generatorTemplateFolder)) {
 
         const stuffName = getStuffName(stuffPath);
-
+        if(stuffPath[0] !== '/') stuffPath = path.join(process.cwd(), stuffPath);
+        
         createTempFolder().then(cacheFolderPath => {
             copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath).then(() => {
                 moveToPackageDestiny(cacheFolderPath, stuffPath);
