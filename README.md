@@ -15,7 +15,7 @@ Steps:
 - Put this in your "scripts" section of the package.json:
 
 	```json
-	"g": "xtuff g"
+	"g": "node ./node_modules/xtuff/index.js g"
 	```
 - Create your custom stuff inside the new `_templates_` folder that you should be have.
 - Run (for example) `npm run g component helloComponent`
