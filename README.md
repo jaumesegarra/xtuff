@@ -1,4 +1,6 @@
 # xtuff
+[![Version](http://img.shields.io/npm/v/xtuff.svg?style=flat-square)](https://npmjs.org/package/xtuff)
+
 > A dev command to create your custom stuff easily! (components, services, etc...)
 
 With xtuff you can create new custom components, services, etc .. for your application dynamically.
