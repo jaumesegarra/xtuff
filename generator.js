@@ -100,7 +100,7 @@ module.exports = (generatorName, stuffPath) => {
     if (fs.existsSync(generatorTemplateFolder)) {
 
         const stuffName = getStuffName(stuffPath);
-        if(stuffPath[0] !== '/') stuffPath = path.join(process.env.INIT_CWD, stuffPath);
+        if(!path.isAbsolute(stuffPath)) stuffPath = path.join(process.env.INIT_CWD, stuffPath);
         
         createTempFolder().then(cacheFolderPath => {
             copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath).then(() => {
