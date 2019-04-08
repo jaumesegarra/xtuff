@@ -4,7 +4,8 @@ import ReactDOM from 'react-dom';
 import <%=Name%>Component from './<%=name%>.jsx';
 
 describe('<<%=Name%>Component />', () => {
-
+	let container;
+	
 	beforeEach(() => {
 	  container = document.createElement('div');
 	  document.body.appendChild(container);

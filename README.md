@@ -24,6 +24,17 @@ Steps:
 	- "component": It's the name of the folder inside `_templates_`.
 	- "helloComponent": Path where the new thing will generated and also: the name of thing.
 
+## Patterns
+Example command: `npm run g component src/hello`
+
+- **%name%** : Stuff name: if you run it, you'll get ‘hello’.
+- **%Name%** : Stuff name capitalized: if you run it, you'll get ‘Hello’.
+- **%path('some_path/file.js')%**: get relative path for the new stuff location ('src/hello/'). 
+
+  If you run it, you'll get '../../some_path/file.js'.
+
+  Please, put the file path on template **relative to your package.json**.
+
 ## License
 
 [MIT](https://github.com/jaumesegarra/xtuff/blob/master/LICENSE)

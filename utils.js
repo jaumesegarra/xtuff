@@ -6,6 +6,7 @@ const getPackageFolder = () => path.join(__dirname, '../../');
 const getTemplatesFolder = () => path.join(getPackageFolder(), TEMPLATE_FOLDER_NAME);
 
 module.exports = {
+	getPackageFolder,
     getTemplatesFolder,
     TEMPLATE_FOLDER_NAME
 }

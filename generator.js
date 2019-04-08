@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const tmp = require('tmp');
 const ejs = require('ejs');
 const utils = require('./utils.js');
+const relative = require('relative');
 
 const EJS_EXTENSION = '.ejs';
 
@@ -33,11 +34,17 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyFolderPath) =>
 
         const component = ejs.render(data, {
             name: stuffName,
-            Name: stuffName.toCapitalize()
+            Name: stuffName.toCapitalize(),
+            path: (v) => {
+                const filePath = path.join(utils.getPackageFolder(), v);
+
+                return relative(absoluteStuffPath, filePath);
+            }
         });
 
-        const filename = path.basename(resourcePath).toLowerCase()
+        const filename = path.basename(resourcePath)
                             .replace('%name%', stuffName)
+                            .replace('%Name%', stuffName.toCapitalize())
                             .replace(EJS_EXTENSION, '');
 
         fs.writeFile(path.join(destinyFolderPath, filename), component);
@@ -94,17 +101,18 @@ const moveToPackageDestiny = (folderPath, destinyFolderPath) => new Promise((res
     });
 });
 
+let absoluteStuffPath;
 module.exports = (generatorName, stuffPath) => {
     const generatorTemplateFolder = path.join(utils.getTemplatesFolder(), generatorName);
 
     if (fs.existsSync(generatorTemplateFolder)) {
 
         const stuffName = getStuffName(stuffPath);
-        if(!path.isAbsolute(stuffPath)) stuffPath = path.join(process.env.INIT_CWD, stuffPath);
+        absoluteStuffPath = !path.isAbsolute(stuffPath) ? path.join(process.env.INIT_CWD, stuffPath) : stuffPath;
         
         createTempFolder().then(cacheFolderPath => {
             copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath).then(() => {
-                moveToPackageDestiny(cacheFolderPath, stuffPath);
+                moveToPackageDestiny(cacheFolderPath, absoluteStuffPath);
             });
         });
     }

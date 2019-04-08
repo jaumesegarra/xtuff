@@ -1,6 +1,6 @@
 {
   "name": "xtuff",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "A dev command to create stuffs easy! (components, services, etc...)",
   "keywords": "command, generator, component, service, react, stuff, files",
   "repository": "https://github.com/jaumesegarra/xtuff",
@@ -19,6 +19,7 @@
     "ejs": "^2.6.1",
     "fs-extra": "^7.0.1",
     "path": "^0.12.7",
+    "relative": "^3.0.2",
     "tmp": "^0.1.0"
   }
 }
