@@ -28,7 +28,12 @@ const createTempFolder = () => new Promise((resolve, reject) => {
     });
 });
 
-const generateFileFromTemplate = (stuffName, resourcePath, destinyFolderPath) => new Promise((resolve, reject) => {
+const resourcePatronize = (resource, stuffName) => {
+    return resource.replace('%name%', stuffName)
+               .replace('%Name%', stuffName.toCapitalize());
+};
+
+const generateFileFromTemplate = (stuffName, resourcePath, destinyPath) => new Promise((resolve, reject) => {
     fs.readFile(resourcePath, 'utf8', (err, data) => {
         if(err) onError('Error reading the file "'+file+'"', err, reject);
 
@@ -42,12 +47,9 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyFolderPath) =>
             }
         });
 
-        const filename = path.basename(resourcePath)
-                            .replace('%name%', stuffName)
-                            .replace('%Name%', stuffName.toCapitalize())
-                            .replace(EJS_EXTENSION, '');
+        const p = destinyPath.replace(new RegExp(EJS_EXTENSION+'$'), '');
 
-        fs.writeFile(path.join(destinyFolderPath, filename), component);
+        fs.writeFile(p, component);
         resolve();
     });
 });
@@ -58,7 +60,7 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath) => 
 
         resources.forEach(resource => {
             let resourcePath = path.join(folderPath, resource);
-            let destinyPath = path.join(destinyFolderPath, resource);
+            let destinyPath = path.join(destinyFolderPath, resourcePatronize(resource, stuffName));
 
             fs.stat(resourcePath, function (err, stat) {
               if (err) onError('Error getting info. of the file "'+resource+'"', err, reject);
@@ -67,13 +69,14 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath) => 
                 const extension = path.extname(resourcePath);
 
                 if(extension === EJS_EXTENSION){
-                    generateFileFromTemplate(stuffName, resourcePath, destinyFolderPath)
+                    generateFileFromTemplate(stuffName, resourcePath, destinyPath)
                         .then(resolve)
                         .catch(reject);
-                }else
+                }else{
                     fs.copy(resourcePath, destinyPath)
                         .then(resolve)
                         .catch(err => onError('Could not copy "'+resource+'"', err, reject));
+                }
               }else if (stat.isDirectory()){
 
                 fs.mkdir(destinyPath, {}, (err) => {
