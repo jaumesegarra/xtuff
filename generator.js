@@ -38,7 +38,7 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyFolderPath) =>
             path: (v) => {
                 const filePath = path.join(utils.getPackageFolder(), v);
 
-                return relative(absoluteStuffPath, filePath);
+                return relative(absoluteStuffPath, filePath).replace(/\\/g, '/');
             }
         });
 
