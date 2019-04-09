@@ -6,6 +6,7 @@ const utils = require('./utils.js');
 const relative = require('relative');
 
 const EJS_EXTENSION = '.ejs';
+const WINDOWS = 'win32';
 
 String.prototype.toCapitalize = function() {
     return this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
@@ -43,7 +44,23 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath) => new P
             path: (v) => {
                 const filePath = path.join(utils.getPackageFolder(), v);
 
-                return relative(absoluteStuffPath, filePath).replace(/\\/g, '/');
+                let relativePath = relative(absoluteStuffPath, filePath)
+                
+                let separatorExp = /\//g;
+                if(process.platform === WINDOWS){
+                    relativePath = relativePath.replace(/\\/g, '/'); // Fix windows path 
+                    separatorExp = /\\/g;
+                }
+
+                /* Relative with stuff subfolders: */
+                let subfoldersNumber = 0;
+                const subfolders = destinyPath.replace(cacheStuffFolderPath, '').match(separatorExp);
+                if(subfolders) subfoldersNumber = subfolders.length-1;
+
+                for(let i = 0; i < subfoldersNumber; i++)
+                    relativePath = '../'+relativePath;
+
+                return relativePath;
             }
         });
 
@@ -105,6 +122,7 @@ const moveToPackageDestiny = (folderPath, destinyFolderPath) => new Promise((res
 });
 
 let absoluteStuffPath;
+let cacheStuffFolderPath;
 module.exports = (generatorName, stuffPath) => {
     const generatorTemplateFolder = path.join(utils.getTemplatesFolder(), generatorName);
 
@@ -114,6 +132,8 @@ module.exports = (generatorName, stuffPath) => {
         absoluteStuffPath = !path.isAbsolute(stuffPath) ? path.join(process.env.INIT_CWD, stuffPath) : stuffPath;
         
         createTempFolder().then(cacheFolderPath => {
+            cacheStuffFolderPath = cacheFolderPath;
+
             copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath).then(() => {
                 moveToPackageDestiny(cacheFolderPath, absoluteStuffPath);
             });
