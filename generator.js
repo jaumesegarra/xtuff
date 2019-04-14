@@ -29,16 +29,27 @@ const createTempFolder = () => new Promise((resolve, reject) => {
     });
 });
 
-const resourcePatronize = (resource, stuffName) => {
-    return resource.replace('%name%', stuffName)
-               .replace('%Name%', stuffName.toCapitalize());
+const resourcePatronize = (resource, stuffName, vars) => {
+    let res = resource.replace(/%name%/g, stuffName)
+               .replace(/%Name%/g, stuffName.toCapitalize());
+
+    for(let v in vars){
+        const varName = `%${v}%`;
+
+        res = res.replace(new RegExp(varName, 'g'), vars[v]);
+    };
+
+    return res;
 };
 
-const generateFileFromTemplate = (stuffName, resourcePath, destinyPath) => new Promise((resolve, reject) => {
+const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, vars) => new Promise((resolve, reject) => {
     fs.readFile(resourcePath, 'utf8', (err, data) => {
         if(err) onError('Error reading the file "'+file+'"', err, reject);
 
+        console.log(vars);
+
         const component = ejs.render(data, {
+            ...vars,
             name: stuffName,
             Name: stuffName.toCapitalize(),
             path: (v) => {
@@ -71,13 +82,13 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath) => new P
     });
 });
 
-const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath) => new Promise((resolve, reject) => {
+const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, vars) => new Promise((resolve, reject) => {
     fs.readdir(folderPath, (err, resources) => {
         if (err) onError('Could not list the directory: ', err, reject);
 
         resources.forEach(resource => {
             let resourcePath = path.join(folderPath, resource);
-            let destinyPath = path.join(destinyFolderPath, resourcePatronize(resource, stuffName));
+            let destinyPath = path.join(destinyFolderPath, resourcePatronize(resource, stuffName, vars));
 
             fs.stat(resourcePath, function (err, stat) {
               if (err) onError('Error getting info. of the file "'+resource+'"', err, reject);
@@ -86,7 +97,7 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath) => 
                 const extension = path.extname(resourcePath);
 
                 if(extension === EJS_EXTENSION){
-                    generateFileFromTemplate(stuffName, resourcePath, destinyPath)
+                    generateFileFromTemplate(stuffName, resourcePath, destinyPath, vars)
                         .then(resolve)
                         .catch(reject);
                 }else{
@@ -100,7 +111,7 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath) => 
                   if (err) onError('Could not create the folder "'+resource+'"', err, reject)
                 });
 
-                copyResourcesToTempFolder(stuffName, resourcePath, destinyPath)
+                copyResourcesToTempFolder(stuffName, resourcePath, destinyPath, vars)
                     .then(resolve)
                     .catch(reject);
               }
@@ -123,7 +134,7 @@ const moveToPackageDestiny = (folderPath, destinyFolderPath) => new Promise((res
 
 let absoluteStuffPath;
 let cacheStuffFolderPath;
-module.exports = (generatorName, stuffPath) => {
+module.exports = (generatorName, stuffPath, vars = {}) => {
     const generatorTemplateFolder = path.join(utils.getTemplatesFolder(), generatorName);
 
     if (fs.existsSync(generatorTemplateFolder)) {
@@ -134,7 +145,7 @@ module.exports = (generatorName, stuffPath) => {
         createTempFolder().then(cacheFolderPath => {
             cacheStuffFolderPath = cacheFolderPath;
 
-            copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath).then(() => {
+            copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath, vars).then(() => {
                 moveToPackageDestiny(cacheFolderPath, absoluteStuffPath);
             });
         });

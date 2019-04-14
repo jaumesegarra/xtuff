@@ -34,6 +34,7 @@ Example command: `npm run g component src/hello`
   If you run it, you'll get '../../some_path/file.js'.
 
   Please, put the file path on template **relative to your package.json**.
+- Also you can define and use your own custom patterns: With argument `--vars` (only works inside package.json:scripts) or passing a third parameter, like that: `npm run g component example '{"pattern": "value"}'`. At the moment only supports json objects.
 
 ## License
 
