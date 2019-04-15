@@ -43,8 +43,8 @@ const resourcePatronize = (resource, stuffName, vars) => {
                .replace(/%[c|C]\(.*\)%/g, w => w.toCapitalize().replace(/%[c|C]\((.*)\)%/, '$1'))
                .replace(/%[u|U]\(.*\)%/g, w => w.toUpperCase().replace(/%[u|U]\((.*)\)%/, '$1'))
                .replace(/%[l|L]\(.*\)%/g, w => w.toLowerCase().replace(/%[l|L]\((.*)\)%/, '$1'))
-               .replace(/%[s|S]\(.*\)%/g, w => w.toSnakeCase().replace(/%[s|S]\((.*)\)%/, '$1'))
-               .replace(/%[k|K]\(.*\)%/g, w => w.toKebabCase().replace(/%[k|K]\((.*)\)%/, '$1'));
+               .replace(/%[sc|SC]\(.*\)%/g, w => w.toSnakeCase().replace(/%[sc|SC]\((.*)\)%/, '$1'))
+               .replace(/%[kc|KC]\(.*\)%/g, w => w.toKebabCase().replace(/%[kc|KC]\((.*)\)%/, '$1'));
 
     for(let v in vars){
         const varName = `%${v}%`;
@@ -62,11 +62,11 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, vars) =>
         const component = ejs.render(data, {
             ...vars,
             "name": stuffName,
-            "c": (st) => st.toCapitalize(),
-            "u": (st) => st.toUpperCase(),
+            "C": (st) => st.toCapitalize(),
+            "U": (st) => st.toUpperCase(),
             "l": (st) => st.toLowerCase(),
-            "s": (st) => st.toSnakeCase(),
-            "k": (st) => st.toKebabCase(),
+            "sc": (st) => st.toSnakeCase(),
+            "kc": (st) => st.toKebabCase(),
             "path": (v) => {
                 const filePath = path.join(utils.getPackageFolder(), v);
 
