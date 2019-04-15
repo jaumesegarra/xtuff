@@ -40,9 +40,9 @@ const createTempFolder = () => new Promise((resolve, reject) => {
 
 const resourcePatronize = (resource, stuffName, vars) => {
     let res = resource.replace(/%name%/g, stuffName)
-               .replace(/%[c|C]\(.*\)%/g, w => w.toCapitalize().replace(/%[c|C]\((.*)\)%/, '$1'))
-               .replace(/%[u|U]\(.*\)%/g, w => w.toUpperCase().replace(/%[u|U]\((.*)\)%/, '$1'))
-               .replace(/%[l|L]\(.*\)%/g, w => w.toLowerCase().replace(/%[l|L]\((.*)\)%/, '$1'))
+               .replace(/%[cz|Cz]\(.*\)%/g, w => w.toCapitalize().replace(/%[cz|Cz]\((.*)\)%/, '$1'))
+               .replace(/%[uc|UC]\(.*\)%/g, w => w.toUpperCase().replace(/%[uc|UC]\((.*)\)%/, '$1'))
+               .replace(/%[lc|LC]\(.*\)%/g, w => w.toLowerCase().replace(/%[lc|LC]\((.*)\)%/, '$1'))
                .replace(/%[sc|SC]\(.*\)%/g, w => w.toSnakeCase().replace(/%[sc|SC]\((.*)\)%/, '$1'))
                .replace(/%[kc|KC]\(.*\)%/g, w => w.toKebabCase().replace(/%[kc|KC]\((.*)\)%/, '$1'));
 
@@ -62,9 +62,9 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, vars) =>
         const component = ejs.render(data, {
             ...vars,
             "name": stuffName,
-            "C": (st) => st.toCapitalize(),
-            "U": (st) => st.toUpperCase(),
-            "l": (st) => st.toLowerCase(),
+            "Cz": (st) => st.toCapitalize(),
+            "UC": (st) => st.toUpperCase(),
+            "lc": (st) => st.toLowerCase(),
             "sc": (st) => st.toSnakeCase(),
             "kc": (st) => st.toKebabCase(),
             "path": (v) => {
