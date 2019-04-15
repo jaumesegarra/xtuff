@@ -4,14 +4,14 @@ import './<%=name%>.scss';
 
 const pkg = require('<%=path('package.json')%>');
 
-const <%=Name%>Component = () => {
+const <%=c(name)%>Component = () => {
 	console.info(`App version: ${pkg.version}`);
 	
 	return (
 		<div className="<%=name%>">
-			<%=Name%> works fine!
+			<%=c(name)%> works fine!
 		</div>
 	);
 }
 
-export default <%=Name%>Component;
+export default <%=c(name)%>Component;

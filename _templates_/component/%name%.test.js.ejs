@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import <%=Name%>Component from './<%=name%>.jsx';
+import <%=c(name)%>Component from './<%=name%>.jsx';
 
-describe('<<%=Name%>Component />', () => {
+describe('<<%=c(name)%>Component />', () => {
 	let container;
 	
 	beforeEach(() => {
@@ -17,6 +17,6 @@ describe('<<%=Name%>Component />', () => {
 	});
 
 	it('renders without crashing', () => {
-		ReactDOM.render(<<%=Name%>Component />, container);
+		ReactDOM.render(<<%=c(name)%>Component />, container);
 	});
 });
