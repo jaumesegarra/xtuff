@@ -25,16 +25,20 @@ Steps:
 	- "helloComponent": Path where the new thing will generated and also: the name of thing.
 
 ## Patterns
-Example command: `npm run g component src/hello`
+Example command: `npm run g component src/helloWorld`
 
-- **%name%** : Stuff name: if you run it, you'll get ‘hello’.
-- **%Name%** : Stuff name capitalized: if you run it, you'll get ‘Hello’.
-- **%path('some_path/file.js')%**: get relative path for the new stuff location ('src/hello/'). 
+- **%name%** : Stuff name: if you run it, you'll get ‘helloWorld’.
+- **%c(name)%**: get capitalized value: if you run it, you'll get ‘HelloWorld’.
+- **%l(name)%**: get value to lowercase: if you run it, you'll get ‘helloworld’.
+- **%u(name)%**: get value to uppercase: if you run it, you'll get HELLOWORLD.
+- **%s(name)%**: get value to snake case: if you run it, you'll get ‘hello_world’.
+- **%k(name)%**: get value to kebab case: if you run it, you'll get ‘hello-world’.
+- **%path('some_path/file.js')%**: get relative path for the new stuff location ('src/helloWorld/'). 
 
   If you run it, you'll get '../../some_path/file.js'.
 
   Please, put the file path on template **relative to your package.json**.
-- Also you can define and use your own custom patterns: With argument `--vars` (only works inside package.json:scripts) or passing a third parameter, like that: `npm run g component example '{"pattern": "value"}'`. At the moment only supports json objects.
+- Also you can define and use your own custom patterns: With argument `--vars` (only works inside package.json:scripts) or passing a third parameter, like this: `npm run g component example '{"pattern": "value"}'`. At the moment only support json objects.
 
 ## License
 

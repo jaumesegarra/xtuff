@@ -7,9 +7,18 @@ const relative = require('relative');
 
 const EJS_EXTENSION = '.ejs';
 const WINDOWS = 'win32';
+const DS_Store = '.DS_Store';
 
 String.prototype.toCapitalize = function() {
     return this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+};
+
+String.prototype.toSnakeCase = function() {
+    return this.replace(/([A-Z])/g, '_$1').toLowerCase();
+};
+
+String.prototype.toKebabCase = function() {
+    return this.replace(/([A-Z])/g, '-$1').toLowerCase();
 };
 
 const getStuffName = (currentPath) => {
@@ -31,7 +40,11 @@ const createTempFolder = () => new Promise((resolve, reject) => {
 
 const resourcePatronize = (resource, stuffName, vars) => {
     let res = resource.replace(/%name%/g, stuffName)
-               .replace(/%Name%/g, stuffName.toCapitalize());
+               .replace(/%[c|C]\(.*\)%/g, w => w.toCapitalize().replace(/%[c|C]\((.*)\)%/, '$1'))
+               .replace(/%[u|U]\(.*\)%/g, w => w.toUpperCase().replace(/%[u|U]\((.*)\)%/, '$1'))
+               .replace(/%[l|L]\(.*\)%/g, w => w.toLowerCase().replace(/%[l|L]\((.*)\)%/, '$1'))
+               .replace(/%[s|S]\(.*\)%/g, w => w.toSnakeCase().replace(/%[s|S]\((.*)\)%/, '$1'))
+               .replace(/%[k|K]\(.*\)%/g, w => w.toKebabCase().replace(/%[k|K]\((.*)\)%/, '$1'));
 
     for(let v in vars){
         const varName = `%${v}%`;
@@ -46,16 +59,18 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, vars) =>
     fs.readFile(resourcePath, 'utf8', (err, data) => {
         if(err) onError('Error reading the file "'+file+'"', err, reject);
 
-        console.log(vars);
-
         const component = ejs.render(data, {
             ...vars,
-            name: stuffName,
-            Name: stuffName.toCapitalize(),
-            path: (v) => {
+            "name": stuffName,
+            "c": (st) => st.toCapitalize(),
+            "u": (st) => st.toUpperCase(),
+            "l": (st) => st.toLowerCase(),
+            "s": (st) => st.toSnakeCase(),
+            "k": (st) => st.toKebabCase(),
+            "path": (v) => {
                 const filePath = path.join(utils.getPackageFolder(), v);
 
-                let relativePath = relative(absoluteStuffPath, filePath)
+                let relativePath = relative(absoluteStuffPath, filePath, false);
                 
                 let separatorExp = /\//g;
                 if(process.platform === WINDOWS){
@@ -101,9 +116,11 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, var
                         .then(resolve)
                         .catch(reject);
                 }else{
-                    fs.copy(resourcePath, destinyPath)
-                        .then(resolve)
-                        .catch(err => onError('Could not copy "'+resource+'"', err, reject));
+                    if(path.basename(resource) !== DS_Store)
+                        fs.copy(resourcePath, destinyPath)
+                            .then(resolve)
+                            .catch(err => onError('Could not copy "'+resource+'"', err, reject));
+                    else resolve();
                 }
               }else if (stat.isDirectory()){
 

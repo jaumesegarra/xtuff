@@ -10,7 +10,7 @@ const generator = require('./generator');
 process.bin = pkg.name;
 
 cmd.version(pkg.version)
-	.option('-x, --vars [o]', 'Use custom variables')
+	.option('--vars [data]', 'Use custom variables')
     .usage("<command> [options]");
 
 cmd.command("g <name> <path> [vars]")
