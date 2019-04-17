@@ -11,6 +11,7 @@ process.bin = pkg.name;
 
 cmd.version(pkg.version)
 	.option('--vars [data]', 'Use custom variables')
+	.option('--delimiter [d]', 'Use another delimiter instead of #')
     .usage("<command> [options]");
 
 cmd.command("g <name> <path> [vars]")
@@ -18,10 +19,19 @@ cmd.command("g <name> <path> [vars]")
     .action((name, path, vars) => {
     	const v = vars || cmd.vars;
 
-    	if(v)
-    		return varmanager(v).then(o => generator(name, path, o)).catch(err => console.error('ERROR:', err));
+    	const delimiter = cmd.delimiter;
+    	let patterns;
 
-    	return generator(name, path);
+    	const gen = () => generator(name, path, delimiter, patterns);
+
+    	if(v)
+    		return varmanager(v).then(o => {
+    			patterns = o;
+
+    			gen();
+    		}).catch(err => console.error('ERROR:', err));
+
+    	return gen();
     });
 
 cmd.on('*', opt => {

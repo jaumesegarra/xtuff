@@ -28,9 +28,9 @@ Steps:
 Example command: `npm run g component src/helloWorld`
 
 - **%name%** : Stuff name: if you run it, you'll get ‘helloWorld’.
-- **%Cz(name)%**: get capitalized value: if you run it, you'll get ‘HelloWorld’.
+- **%cz(name)%**: get capitalized value: if you run it, you'll get ‘HelloWorld’.
 - **%lc(name)%**: get value to lowercase: if you run it, you'll get ‘helloworld’.
-- **%UC(name)%**: get value to uppercase: if you run it, you'll get HELLOWORLD.
+- **%uc(name)%**: get value to uppercase: if you run it, you'll get HELLOWORLD.
 - **%sc(name)%**: get value to snake case: if you run it, you'll get ‘hello_world’.
 - **%kc(name)%**: get value to kebab case: if you run it, you'll get ‘hello-world’.
 - **%path('some_path/file.js')%**: get relative path for the new stuff location ('src/helloWorld/'). 
@@ -39,6 +39,8 @@ Example command: `npm run g component src/helloWorld`
 
   Please, put the file path on template **relative to your package.json**.
 - Also you can define and use your own custom patterns: With argument `--vars` (only works inside package.json:scripts) or passing a third parameter, like this: `npm run g component example '{"pattern": "value"}'`. At the moment only support json objects.
+
+**Note**: You can change delimiter (by default '%') using `--delimiter` argument. For example putting `xtuff g --delimiter='$'` in your package.json script section.
 
 ## License
 

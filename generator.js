@@ -38,32 +38,43 @@ const createTempFolder = () => new Promise((resolve, reject) => {
     });
 });
 
-const resourcePatronize = (resource, stuffName, vars) => {
-    let res = resource.replace(/%name%/g, stuffName)
-               .replace(/%[cz|Cz]\(.*\)%/g, w => w.toCapitalize().replace(/%[cz|Cz]\((.*)\)%/, '$1'))
-               .replace(/%[uc|UC]\(.*\)%/g, w => w.toUpperCase().replace(/%[uc|UC]\((.*)\)%/, '$1'))
-               .replace(/%[lc|LC]\(.*\)%/g, w => w.toLowerCase().replace(/%[lc|LC]\((.*)\)%/, '$1'))
-               .replace(/%[sc|SC]\(.*\)%/g, w => w.toSnakeCase().replace(/%[sc|SC]\((.*)\)%/, '$1'))
-               .replace(/%[kc|KC]\(.*\)%/g, w => w.toKebabCase().replace(/%[kc|KC]\((.*)\)%/, '$1'));
+const delimitate = (exp, delimiter) => {
+    return new RegExp('\\'+delimiter+exp+'\\'+delimiter, 'gi');
+}
+
+const resourcePatronize = (resource, stuffName, delimiter, vars) => {
+
+    let res = resource.replace(delimitate('name', delimiter), stuffName);
 
     for(let v in vars){
-        const varName = `%${v}%`;
+        const varName = delimiter+v+delimiter;
 
         res = res.replace(new RegExp(varName, 'g'), vars[v]);
     };
 
+    String.prototype.replaceFunctionPattern = function (pattern, functionName) {
+        return this.replace(delimitate(pattern+'\\(.*\\)', delimiter), w => w[functionName]().replace(delimitate(pattern+'\\((.*)\\)', delimiter), '$1')[functionName]())
+    }
+
+    res = res.replaceFunctionPattern('cz', 'toCapitalize')
+        .replaceFunctionPattern('uc', 'toUpperCase')
+        .replaceFunctionPattern('lc', 'toLowerCase')
+        .replaceFunctionPattern('sc', 'toSnakeCase')
+        .replaceFunctionPattern('kc', 'toKebabCase');
+
     return res;
 };
 
-const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, vars) => new Promise((resolve, reject) => {
+const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, delimiter, vars) => new Promise((resolve, reject) => {
     fs.readFile(resourcePath, 'utf8', (err, data) => {
         if(err) onError('Error reading the file "'+file+'"', err, reject);
 
+        try {
         const component = ejs.render(data, {
             ...vars,
             "name": stuffName,
-            "Cz": (st) => st.toCapitalize(),
-            "UC": (st) => st.toUpperCase(),
+            "cz": (st) => st.toCapitalize(),
+            "uc": (st) => st.toUpperCase(),
             "lc": (st) => st.toLowerCase(),
             "sc": (st) => st.toSnakeCase(),
             "kc": (st) => st.toKebabCase(),
@@ -88,22 +99,25 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, vars) =>
 
                 return relativePath;
             }
-        });
+        }, {delimiter: delimiter});
 
         const p = destinyPath.replace(new RegExp(EJS_EXTENSION+'$'), '');
 
         fs.writeFile(p, component);
         resolve();
+        }catch(err){
+            console.log(err);
+        }
     });
 });
 
-const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, vars) => new Promise((resolve, reject) => {
+const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, delimiter, vars) => new Promise((resolve, reject) => {
     fs.readdir(folderPath, (err, resources) => {
         if (err) onError('Could not list the directory: ', err, reject);
 
         resources.forEach(resource => {
             let resourcePath = path.join(folderPath, resource);
-            let destinyPath = path.join(destinyFolderPath, resourcePatronize(resource, stuffName, vars));
+            let destinyPath = path.join(destinyFolderPath, resourcePatronize(resource, stuffName, delimiter, vars));
 
             fs.stat(resourcePath, function (err, stat) {
               if (err) onError('Error getting info. of the file "'+resource+'"', err, reject);
@@ -112,7 +126,7 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, var
                 const extension = path.extname(resourcePath);
 
                 if(extension === EJS_EXTENSION){
-                    generateFileFromTemplate(stuffName, resourcePath, destinyPath, vars)
+                    generateFileFromTemplate(stuffName, resourcePath, destinyPath, delimiter, vars)
                         .then(resolve)
                         .catch(reject);
                 }else{
@@ -125,12 +139,12 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, var
               }else if (stat.isDirectory()){
 
                 fs.mkdir(destinyPath, {}, (err) => {
-                  if (err) onError('Could not create the folder "'+resource+'"', err, reject)
-                });
+                  if (err) onError('Could not create the folder "'+resource+'"', err, reject);
 
-                copyResourcesToTempFolder(stuffName, resourcePath, destinyPath, vars)
+                  copyResourcesToTempFolder(stuffName, resourcePath, destinyPath, delimiter, vars)
                     .then(resolve)
                     .catch(reject);
+                });
               }
             });
         });
@@ -151,7 +165,7 @@ const moveToPackageDestiny = (folderPath, destinyFolderPath) => new Promise((res
 
 let absoluteStuffPath;
 let cacheStuffFolderPath;
-module.exports = (generatorName, stuffPath, vars = {}) => {
+module.exports = (generatorName, stuffPath, delimiter = '%', vars = {}) => {
     const generatorTemplateFolder = path.join(utils.getTemplatesFolder(), generatorName);
 
     if (fs.existsSync(generatorTemplateFolder)) {
@@ -162,7 +176,7 @@ module.exports = (generatorName, stuffPath, vars = {}) => {
         createTempFolder().then(cacheFolderPath => {
             cacheStuffFolderPath = cacheFolderPath;
 
-            copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath, vars).then(() => {
+            copyResourcesToTempFolder(stuffName, generatorTemplateFolder, cacheFolderPath, delimiter, vars).then(() => {
                 moveToPackageDestiny(cacheFolderPath, absoluteStuffPath);
             });
         });
