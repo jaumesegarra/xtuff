@@ -28,9 +28,11 @@ Steps:
 Example command: `npm run g component src/helloWorld`
 
 - **%name%** : Stuff name: if you run it, you'll get ‘helloWorld’.
-- **%cz(name)%**: get capitalized value: if you run it, you'll get ‘HelloWorld’.
 - **%lc(name)%**: get value to lowercase: if you run it, you'll get ‘helloworld’.
 - **%uc(name)%**: get value to uppercase: if you run it, you'll get HELLOWORLD.
+- **%cz(name)%**: get capitalized value: if you run it, you'll get ‘HelloWorld’.
+- **%ls(name)%**: get value with start letter in lower case: if you run it with stuff name 'HelloWorld', you'll get ‘helloWorld’.
+- **%cc(name)%**: get value to camel case: if you run it with stuff name 'hello-world', you'll get ‘helloWorld’.
 - **%sc(name)%**: get value to snake case: if you run it, you'll get ‘hello_world’.
 - **%kc(name)%**: get value to kebab case: if you run it, you'll get ‘hello-world’.
 - **%path('some_path/file.js')%**: get relative path for the new stuff location ('src/helloWorld/'). 

@@ -10,15 +10,23 @@ const WINDOWS = 'win32';
 const DS_Store = '.DS_Store';
 
 String.prototype.toCapitalize = function() {
-    return this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+    return this.replace(/(?:^|\s)\S/g, w => w.toUpperCase());
+};
+
+String.prototype.toLowerStart = function() {
+    return this.replace(/(?:^|\s)\S/g, w => w.toLowerCase());
 };
 
 String.prototype.toSnakeCase = function() {
-    return this.replace(/([A-Z])/g, '_$1').toLowerCase();
+    return this.toLowerStart().replace(/([A-Z])/g, '_$1').toLowerCase();
 };
 
 String.prototype.toKebabCase = function() {
-    return this.replace(/([A-Z])/g, '-$1').toLowerCase();
+    return this.toLowerStart().replace(/([A-Z])/g, '-$1').toLowerCase();
+};
+
+String.prototype.toCamelCase = function() {
+    return this.replace(/(?!^)(-|_)(.?)/g, w => w.replace(/(-|_)/, '').toUpperCase());
 };
 
 const getStuffName = (currentPath) => {
@@ -56,9 +64,12 @@ const resourcePatronize = (resource, stuffName, delimiter, vars) => {
         return this.replace(delimitate(pattern+'\\(.*\\)', delimiter), w => w[functionName]().replace(delimitate(pattern+'\\((.*)\\)', delimiter), '$1')[functionName]())
     }
 
-    res = res.replaceFunctionPattern('cz', 'toCapitalize')
+    res = res
         .replaceFunctionPattern('uc', 'toUpperCase')
         .replaceFunctionPattern('lc', 'toLowerCase')
+        .replaceFunctionPattern('cz', 'toCapitalize')
+        .replaceFunctionPattern('ls', 'toLowerStart')
+        .replaceFunctionPattern('cc', 'toCamelCase')
         .replaceFunctionPattern('sc', 'toSnakeCase')
         .replaceFunctionPattern('kc', 'toKebabCase');
 
@@ -74,8 +85,10 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, delimite
             ...vars,
             "name": stuffName,
             "cz": (st) => st.toCapitalize(),
+            "ls": (st) => st.toLowerStart(),
             "uc": (st) => st.toUpperCase(),
             "lc": (st) => st.toLowerCase(),
+            "cc": (st) => st.toCamelCase(),
             "sc": (st) => st.toSnakeCase(),
             "kc": (st) => st.toKebabCase(),
             "path": (v) => {
