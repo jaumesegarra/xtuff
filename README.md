@@ -1,5 +1,4 @@
-# xtuff
-[![Version](http://img.shields.io/npm/v/xtuff.svg?style=flat-square)](https://npmjs.org/package/xtuff)
+# xtuff &middot; [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jaumesegarra/xtuff/blob/master/LICENSE)[![Version](http://img.shields.io/npm/v/xtuff.svg?style=flat-square)](https://npmjs.org/package/xtuff)
 
 > A dev command to create your custom stuff easily! (components, services, etc...)
 
