@@ -61,17 +61,17 @@ const resourcePatronize = (resource, stuffName, delimiter, vars) => {
     };
 
     String.prototype.replaceFunctionPattern = function (pattern, functionName) {
-        return this.replace(delimitate(pattern+'\\(.*\\)', delimiter), w => w[functionName]().replace(delimitate(pattern+'\\((.*)\\)', delimiter), '$1')[functionName]())
+        return this.replace(delimitate(pattern+'\\(.*\\)', delimiter), w => w.replace(delimitate(pattern+'\\((.*)\\)', delimiter), '$1')[functionName]())
     }
 
     res = res
+        .replaceFunctionPattern('cc', 'toCamelCase')
+        .replaceFunctionPattern('sc', 'toSnakeCase')
+        .replaceFunctionPattern('kc', 'toKebabCase')
         .replaceFunctionPattern('uc', 'toUpperCase')
         .replaceFunctionPattern('lc', 'toLowerCase')
         .replaceFunctionPattern('cz', 'toCapitalize')
-        .replaceFunctionPattern('ls', 'toLowerStart')
-        .replaceFunctionPattern('cc', 'toCamelCase')
-        .replaceFunctionPattern('sc', 'toSnakeCase')
-        .replaceFunctionPattern('kc', 'toKebabCase');
+        .replaceFunctionPattern('ls', 'toLowerStart');
 
     return res;
 };
