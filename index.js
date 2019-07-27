@@ -4,34 +4,29 @@
 const cmd = require('commander');
 const pkg = require('./package.json');
 
-const varmanager = require('./varmanager');
 const generator = require('./generator');
+const utils = require('./utils');
 
 process.bin = pkg.name;
 
 cmd.version(pkg.version)
-	.option('--vars [data]', 'Use custom variables')
+    .option('--vars [data]', 'Use custom variables')
 	.option('--delimiter [d]', 'Use another delimiter instead of #')
     .usage("<command> [options]");
 
 cmd.command("g <name> <path> [vars]")
     .description("Generate a new stuff")
     .action((name, path, vars) => {
-    	const v = vars || cmd.vars;
+        // Trying obtain xtuff config from project package.json (xtuff)
+        utils.getXtuffPackageConfig().then((pckConfig) => {
+            let v = vars || cmd.vars || pckConfig.vars;
+            if(v && typeof v === 'string')
+               try{ v = JSON.parse(v); } catch (err) { v = {}; console.info('INVALID VARIABLES PASSED', err); }
 
-    	const delimiter = cmd.delimiter;
-    	let patterns;
+            const delimiter = cmd.delimiter || pckConfig.delimiter;
 
-    	const gen = () => generator(name, path, delimiter, patterns);
-
-    	if(v)
-    		return varmanager(v).then(o => {
-    			patterns = o;
-
-    			gen();
-    		}).catch(err => console.error('ERROR:', err));
-
-    	return gen();
+            generator(name, path, delimiter, v);
+        });
     });
 
 cmd.on('*', opt => {

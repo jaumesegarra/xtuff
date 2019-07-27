@@ -2,32 +2,14 @@ const path = require('path');
 const fs = require('fs-extra');
 const tmp = require('tmp');
 const ejs = require('ejs');
-const utils = require('./utils.js');
+const utils = require('./utils');
 const relative = require('relative');
+
+const patterns = require('./patterns');
 
 const EJS_EXTENSION = '.ejs';
 const WINDOWS = 'win32';
 const DS_Store = '.DS_Store';
-
-String.prototype.toCapitalize = function() {
-    return this.replace(/(?:^|\s)\S/g, w => w.toUpperCase());
-};
-
-String.prototype.toLowerStart = function() {
-    return this.replace(/(?:^|\s)\S/g, w => w.toLowerCase());
-};
-
-String.prototype.toSnakeCase = function() {
-    return this.toLowerStart().replace(/([A-Z])/g, '_$1').toLowerCase();
-};
-
-String.prototype.toKebabCase = function() {
-    return this.toLowerStart().replace(/([A-Z])/g, '-$1').toLowerCase();
-};
-
-String.prototype.toCamelCase = function() {
-    return this.replace(/(?!^)(-|_)(.?)/g, w => w.replace(/(-|_)/, '').toUpperCase());
-};
 
 const getStuffName = (currentPath) => {
     return path.basename(currentPath);
@@ -54,24 +36,24 @@ const resourcePatronize = (resource, stuffName, delimiter, vars) => {
 
     let res = resource.replace(delimitate('name', delimiter), stuffName);
 
-    for(let v in vars){
-        const varName = delimiter+v+delimiter;
-
-        res = res.replace(new RegExp(varName, 'g'), vars[v]);
-    };
-
-    String.prototype.replaceFunctionPattern = function (pattern, functionName) {
-        return this.replace(delimitate(pattern+'\\(.*\\)', delimiter), w => w.replace(delimitate(pattern+'\\((.*)\\)', delimiter), '$1')[functionName]())
+    String.prototype.replaceFunctionPattern = function (pattern, func) {
+        return this.replace(delimitate(pattern+'\\(.*\\)', delimiter), w => func(w.replace(delimitate(pattern+'\\((.*)\\)', delimiter), '$1')))
     }
 
-    res = res
-        .replaceFunctionPattern('cc', 'toCamelCase')
-        .replaceFunctionPattern('sc', 'toSnakeCase')
-        .replaceFunctionPattern('kc', 'toKebabCase')
-        .replaceFunctionPattern('uc', 'toUpperCase')
-        .replaceFunctionPattern('lc', 'toLowerCase')
-        .replaceFunctionPattern('cz', 'toCapitalize')
-        .replaceFunctionPattern('ls', 'toLowerStart');
+    const replacer = (key, value) => {
+        if(value instanceof Function){
+            return res.replaceFunctionPattern(key, value);
+        }else
+            return res.replace(delimitate(key, delimiter), value);
+    }
+
+    for(let v in vars){
+        res = replacer(v, vars[v]);
+    };
+
+    for(let p in patterns){
+        res = replacer(p, patterns[p]);
+    };
 
     return res;
 };
@@ -81,45 +63,45 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, delimite
         if(err) onError('Error reading the file "'+file+'"', err, reject);
 
         try {
-        const component = ejs.render(data, {
-            ...vars,
-            "name": stuffName,
-            "cz": (st) => st.toCapitalize(),
-            "ls": (st) => st.toLowerStart(),
-            "uc": (st) => st.toUpperCase(),
-            "lc": (st) => st.toLowerCase(),
-            "cc": (st) => st.toCamelCase(),
-            "sc": (st) => st.toSnakeCase(),
-            "kc": (st) => st.toKebabCase(),
-            "path": (v) => {
-                const filePath = path.join(utils.getPackageFolder(), v);
+            const component = ejs.render(data, {
+                ...vars,
+                "name": stuffName,
+                ...patterns,
+                "path": (v) => {
+                    let relativePath = '';
 
-                let relativePath = relative(absoluteStuffPath, filePath, false);
-                
-                let separatorExp = /\//g;
-                if(process.platform === WINDOWS){
-                    relativePath = relativePath.replace(/\\/g, '/'); // Fix windows path 
-                    separatorExp = /\\/g;
+                    try {
+                        const filePath = path.join(utils.getPackageFolder(), v);
+
+                        relativePath = relative(absoluteStuffPath, filePath, false);
+                        
+                        let separatorExp = /\//g;
+                        if(process.platform === WINDOWS){
+                            relativePath = relativePath.replace(/\\/g, '/'); // Fix windows path 
+                            separatorExp = /\\/g;
+                        }
+
+                        /* Relative with stuff subfolders: */
+                        let subfoldersNumber = 0;
+                        const subfolders = destinyPath.replace(cacheStuffFolderPath, '').match(separatorExp);
+                        if(subfolders) subfoldersNumber = subfolders.length-1;
+
+                        for(let i = 0; i < subfoldersNumber; i++)
+                            relativePath = '../'+relativePath;
+                    }catch (err) {
+                        console.info(`Error obtain the relative path for ${filePath}`, err);
+                    }
+
+                    return relativePath;
                 }
+            }, {delimiter: delimiter});
 
-                /* Relative with stuff subfolders: */
-                let subfoldersNumber = 0;
-                const subfolders = destinyPath.replace(cacheStuffFolderPath, '').match(separatorExp);
-                if(subfolders) subfoldersNumber = subfolders.length-1;
+            const p = destinyPath.replace(new RegExp(EJS_EXTENSION+'$'), '');
 
-                for(let i = 0; i < subfoldersNumber; i++)
-                    relativePath = '../'+relativePath;
-
-                return relativePath;
-            }
-        }, {delimiter: delimiter});
-
-        const p = destinyPath.replace(new RegExp(EJS_EXTENSION+'$'), '');
-
-        fs.writeFile(p, component);
-        resolve();
+            fs.writeFile(p, component);
+            resolve();
         }catch(err){
-            console.log(err);
+            onError('Opss!', err, reject);
         }
     });
 });
@@ -167,12 +149,14 @@ const copyResourcesToTempFolder = (stuffName, folderPath, destinyFolderPath, del
 
 const moveToPackageDestiny = (folderPath, destinyFolderPath) => new Promise((resolve, reject) => {
     fs.move(folderPath, destinyFolderPath, { overwrite: true }, err => {
-        if (err) {
-            console.error(err);
-            reject(err);
-        }
+        if (err)
+            return onError('Error moving xtuff to destiny folder', err, reject);
 
-        resolve();
+        fs.remove(folderPath, err => {
+          if (err) return onError('Error removing tmp folder', err, reject);
+
+          resolve();
+        });
     });
 });
 
