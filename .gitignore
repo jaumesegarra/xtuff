@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/tests/node_modules
+/tests/unit/tmp_stuff/**/*

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "postinstall": "node ./postinstall.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Jaume Segarra <jaumesv.jmr@gmail.com>",
   "license": "MIT",
@@ -22,5 +22,8 @@
     "path": "0.12.7",
     "relative": "3.0.2",
     "tmp": "0.1.0"
+  },
+  "devDependencies": {
+    "jest": "24.8.0"
   }
 }

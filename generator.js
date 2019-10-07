@@ -164,9 +164,9 @@ let absoluteStuffPath;
 let cacheStuffFolderPath;
 module.exports = (generatorName, stuffPath, delimiter = '%', vars = {}) => {
     const generatorTemplateFolder = path.join(utils.getTemplatesFolder(), generatorName);
-
+    
     if (fs.existsSync(generatorTemplateFolder)) {
-
+        
         const stuffName = getStuffName(stuffPath);
         absoluteStuffPath = !path.isAbsolute(stuffPath) ? path.join(process.env.INIT_CWD, stuffPath) : stuffPath;
         
@@ -177,5 +177,5 @@ module.exports = (generatorName, stuffPath, delimiter = '%', vars = {}) => {
                 moveToPackageDestiny(cacheFolderPath, absoluteStuffPath);
             });
         });
-    }
+    }else console.error('Component folder not found :(', generatorTemplateFolder);
 }

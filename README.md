@@ -41,10 +41,14 @@ Example command: `npm run g component src/helloWorld`
   If you run it, you'll get '../../some_path/file.js'.
 
   Please, put the file path on template **relative to your package.json**.
-- Also you can define and use your own custom patterns: With argument `--vars` (only works inside package.json:scripts) or passing a third parameter, like this: `npm run g component example '{"pattern": "value"}'`. At the moment only support json objects.
 
+Also you can define and use your own custom patterns ('vars' option).
 
-**Note**: You can change delimiter (by default '%') using `--delimiter` argument. For example putting `xtuff g --delimiter='$'` in your package.json script section.
+## Options
+You can set these options passing as parameter (for example: --delimiter '%') or declaring in your package.json with 'xtuff' key (for example: "xtuff": { "delimiter": "%" }).
+
+	- vars: Define and use your own custom patterns. Also you can pass as third parameter, like this: `npm run g component example '{"pattern": "value"}'`. 
+	- delimiter: Change patterns delimiter (by default '%').
 
 ## License
 
