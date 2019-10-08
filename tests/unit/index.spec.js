@@ -1,3 +1,4 @@
+const moment = require('moment');
 const testUtils = require('./test.utils');
 
 test('Generate static files', async () => {
@@ -66,14 +67,39 @@ test('Calcule paths (pattern)', async () => {
 });
 
 test('Now pattern', async () => {
-  
+  const stuffName = 'now-pattern-stuff';
+  const stuffPath = testUtils.stuffPath(stuffName);
+
+  const cmdResult = await testUtils.cli(['now-pattern', stuffPath]);
+  expect(cmdResult.code).toBe(0);
+
+  const result = await testUtils.getJson(stuffPath, 'file.json');
+  expect(result['date']).toBe(moment().format('DD/MM/YYYY'));
 });
 
 
 test('Custom variables', async () => {
+  const stuffName = 'custom-variables-stuff';
+  const stuffPath = testUtils.stuffPath(stuffName);
 
+  const cmdResult = await testUtils.cli(['custom-variables', stuffPath], [{ name: "vars", value: '{"author": "Jaume Segarra"}' }]);
+  expect(cmdResult.code).toBe(0);
+
+  const result = await testUtils.getJson(stuffPath, 'file.json');
+  expect(result['author']).toBe('Jaume Segarra');
+  expect(result['username']).toBe('jaume_segarra');
 });
 
 test('Custom delimiters', async () => {
+  const stuffName = 'custom-delimiters-stuff';
+  const stuffPath = testUtils.stuffPath(stuffName);
 
+  const cmdResult = await testUtils.cli(['custom-delimiters', stuffPath], [{ name: "delimiter", value: '$' }]);
+  expect(cmdResult.code).toBe(0);
+
+  const result = await testUtils.getJson(stuffPath, 'file.json');
+  expect(result['message']).toBe('custom-delimiters-stuff');
+
+  const fileExists = await testUtils.fileExists(stuffPath, 'custom-delimiters-stuff.json');
+  expect(fileExists).toBe(true);
 });

@@ -25,7 +25,8 @@ cmd.command("g <name> <path> [vars]")
         // Trying obtain xtuff config from project package.json (xtuff)
         utils.getXtuffPackageConfig().then((pckConfig) => {
             let v = vars || cmd.vars || pckConfig.vars;
-
+            console.log(v);
+            
             if(v && typeof v === 'string')
                try{ v = JSON.parse(v); } catch (err) { v = {}; console.info('INVALID VARIABLES PASSED', err); }
 

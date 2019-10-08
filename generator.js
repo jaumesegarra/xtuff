@@ -66,6 +66,9 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, delimite
             const component = ejs.render(data, {
                 ...vars,
                 "name": stuffName,
+                "replace": (exp, replacement, v) => {
+                    return v.replace(new RegExp(exp), replacement);
+                },
                 ...patterns,
                 "path": (v) => {
                     let relativePath = '';

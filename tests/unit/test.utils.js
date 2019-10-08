@@ -4,9 +4,14 @@ const exec = require('child_process').exec;
 
 function stuffPath(name){ return path.join(__dirname, './tmp_stuff/'+name) };
 
-function cli(args, cwd = __dirname) {
+function cli(args, params = [], cwd = __dirname) {
+  let command = `node ../../index.js g ${args.map(a => '"'+a+'"').join(' ')} --package-folder "${path.join(__dirname, '../')}"`
+
+  for(const param of params)
+     command += ` --${param.name} '${param.value}'`;
+
   return new Promise(resolve => { 
-    exec(`node ../../index.js g ${args.map(a => '"'+a+'"').join(' ')} --package-folder "${path.join(__dirname, '../')}"`,
+    exec(command,
     { cwd }, 
     (error, stdout, stderr) => { resolve({
     code: error && error.code ? error.code : 0,

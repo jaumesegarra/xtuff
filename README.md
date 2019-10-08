@@ -36,6 +36,7 @@ Example command: `npm run g component src/helloWorld`
 - **%cc(name)%**: get value to camel case: if you run it with stuff name 'hello-world', you'll get ‘helloWorld’.
 - **%sc(name)%**: get value to snake case: if you run it, you'll get ‘hello_world’.
 - **%kc(name)%**: get value to kebab case: if you run it, you'll get ‘hello-world’.
+- **%replace("World", "word", name)%**: search on a text by regular expression and replace by other text: if you run it, you'll get ‘helloword’.
 - **%path('some_path/file.js')%**: get relative path for the new stuff location ('src/helloWorld/'). 
 
   If you run it, you'll get '../../some_path/file.js'.
