@@ -7,15 +7,30 @@ const lc = require('./lc');
 const cz = require('./cz');
 const ls = require('./ls');
 const now = require('./now');
+const replace = require('./replace');
+const path = require('./path');
 
-module.exports = {
-	username,
+const lettercasePatterns = {
 	cc,
 	sc,
 	kc,
 	uc,
 	lc,
 	cz,
-	ls,
+	ls
+};
+
+const infoPatterns = {
+	username,
 	now
+};
+
+module.exports = {
+	notAvailableOnFilenames: ['path', 'replace'],
+	list: {
+		...lettercasePatterns,
+		...infoPatterns,
+		path,
+		replace
+	}
 }

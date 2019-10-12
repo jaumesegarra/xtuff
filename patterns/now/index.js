@@ -1,7 +1,7 @@
 const moment = require('moment');
 
 module.exports = (format) => {
-	let value = '';
+	let value = '';	
 
     try{
         const momm = moment();

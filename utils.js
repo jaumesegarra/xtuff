@@ -18,9 +18,14 @@ const getXtuffPackageConfig = () => new Promise((resolve, reject) => {
 	} else resolve({});
 });
 
+const GLOBAL_CURRENT_EJS_FILE_CONTEXT = 'EJS_FILE_CONTEXT';
+const getCurrentEJSFileContext = () => global[GLOBAL_CURRENT_EJS_FILE_CONTEXT];
+
 module.exports = {
 	getPackageFolder,
     getTemplatesFolder,
     getXtuffPackageConfig,
-    TEMPLATE_FOLDER_NAME
+    TEMPLATE_FOLDER_NAME,
+    GLOBAL_CURRENT_EJS_FILE_CONTEXT,
+    getCurrentEJSFileContext
 }

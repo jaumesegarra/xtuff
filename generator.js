@@ -3,12 +3,10 @@ const fs = require('fs-extra');
 const tmp = require('tmp');
 const ejs = require('ejs');
 const utils = require('./utils');
-const relative = require('relative');
 
 const patterns = require('./patterns');
 
 const EJS_EXTENSION = '.ejs';
-const WINDOWS = 'win32';
 const DS_Store = '.DS_Store';
 
 const getStuffName = (currentPath) => {
@@ -16,7 +14,7 @@ const getStuffName = (currentPath) => {
 };
 
 const onError = (message, err, reject) => {
-    console.error(message, err);
+    throw console.error(message, err);
     reject(err);
 }
 
@@ -51,8 +49,9 @@ const resourcePatronize = (resource, stuffName, delimiter, vars) => {
         res = replacer(v, vars[v]);
     };
 
-    for(let p in patterns){
-        res = replacer(p, patterns[p]);
+    for(let p in patterns.list){
+        if(patterns.notAvailableOnFilenames.indexOf(p) === -1)
+            res = replacer(p, patterns.list[p]);
     };
 
     return res;
@@ -63,40 +62,16 @@ const generateFileFromTemplate = (stuffName, resourcePath, destinyPath, delimite
         if(err) onError('Error reading the file "'+file+'"', err, reject);
 
         try {
+            global[utils.GLOBAL_CURRENT_EJS_FILE_CONTEXT] = {
+                absoluteStuffPath,
+                cacheStuffFolderPath,
+                destinyPath
+            };
+
             const component = ejs.render(data, {
                 ...vars,
                 "name": stuffName,
-                "replace": (exp, replacement, v) => {
-                    return v.replace(new RegExp(exp), replacement);
-                },
-                ...patterns,
-                "path": (v) => {
-                    let relativePath = '';
-
-                    try {
-                        const filePath = path.join(utils.getPackageFolder(), v);
-
-                        relativePath = relative(absoluteStuffPath, filePath, false);
-                        
-                        let separatorExp = /\//g;
-                        if(process.platform === WINDOWS){
-                            relativePath = relativePath.replace(/\\/g, '/'); // Fix windows path 
-                            separatorExp = /\\/g;
-                        }
-
-                        /* Relative with stuff subfolders: */
-                        let subfoldersNumber = 0;
-                        const subfolders = destinyPath.replace(cacheStuffFolderPath, '').match(separatorExp);
-                        if(subfolders) subfoldersNumber = subfolders.length-1;
-
-                        for(let i = 0; i < subfoldersNumber; i++)
-                            relativePath = '../'+relativePath;
-                    }catch (err) {
-                        console.info(`Error obtain the relative path for ${filePath}`, err);
-                    }
-
-                    return relativePath;
-                }
+                ...patterns.list
             }, {delimiter: delimiter});
 
             const p = destinyPath.replace(new RegExp(EJS_EXTENSION+'$'), '');
