@@ -28,7 +28,7 @@ Example command: `npm run g component src/helloWorld`
 
 - **%name%** : Stuff name: if you run it, you'll get ‘helloWorld’.
 - **%username%** : get the current username of the PC.
-- **%now(format)%** : get now date with the format introduced (MM/DD/YYYY, DD-MM-YYYY, HH:ii, etc...)
+- **%now(format)%** : get now date with the format introduced (MM/DD/YYYY, DD-MM-YYYY, HH:mm, etc...)
 - **%lc(name)%**: get value to lowercase: if you run it, you'll get ‘helloworld’.
 - **%uc(name)%**: get value to uppercase: if you run it, you'll get HELLOWORLD.
 - **%cz(name)%**: get capitalized value: if you run it, you'll get ‘HelloWorld’.
