@@ -5,8 +5,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const utils = require('./utils.js');
 
-//utils.obtainFolderPaths();
-
 const templateFolder = path.join(__dirname, utils.TEMPLATE_FOLDER_NAME);
 const templateDestinyFolder = utils.getTemplatesFolder();
 
