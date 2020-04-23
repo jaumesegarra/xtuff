@@ -1,6 +1,6 @@
 {
   "name": "xtuff",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A dev command to create stuffs easy! (components, services, etc...)",
   "keywords": "cli, generator, component, service, stuff, react, files",
   "repository": "https://github.com/jaumesegarra/xtuff",
